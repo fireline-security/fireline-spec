@@ -1,0 +1,15 @@
+{
+  "schema_version": "v1",
+  "source": {
+    "tool": "trivy",
+    "rule_id": "CVE-2024-99999"
+  },
+  "identity_components": {
+    "package": "openssl"
+  },
+  "severity_raw": "CRITICAL",
+  "raw_payload": {
+    "VulnerabilityID": "CVE-2024-99999"
+  },
+  "observed_at": 1758000000
+}

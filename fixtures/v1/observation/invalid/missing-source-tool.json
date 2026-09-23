@@ -1,0 +1,14 @@
+{
+  "schema_version": "v1",
+  "source": {
+    "rule_id": "nuclei-exposed-panel"
+  },
+  "identity_components": {
+    "host": "edge-api.internal",
+    "port": "8080"
+  },
+  "severity_raw": "MEDIUM",
+  "raw_payload": {
+    "template-id": "nuclei-exposed-panel"
+  }
+}

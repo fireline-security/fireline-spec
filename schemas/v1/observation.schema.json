@@ -1,0 +1,63 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.fireline.security/v1/observation.schema.json",
+  "title": "Observation",
+  "description": "One claim from one tool run about a potential security concern (\"Smoke\"). An Observation is immutable once emitted: it carries exactly what the source tool reported, never a corrected or merged view. Fireline core assigns id, fingerprint, and ingestion time on receipt — an adapter never claims those.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "source",
+    "identity_components",
+    "severity_raw",
+    "raw_payload"
+  ],
+  "properties": {
+    "schema_version": {
+      "description": "Wire contract version this Observation was built against.",
+      "const": "v1"
+    },
+    "source": {
+      "description": "The tool and rule that produced this Observation.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["tool", "rule_id"],
+      "properties": {
+        "tool": {
+          "description": "Name of the scanner, e.g. \"semgrep\", \"trivy\", \"osv-scanner\", \"nuclei\".",
+          "type": "string",
+          "minLength": 1
+        },
+        "tool_version": {
+          "description": "Version string of the tool that ran, if known.",
+          "type": "string"
+        },
+        "rule_id": {
+          "description": "The tool's own identifier for what fired: a Semgrep rule id, a CVE, a Nuclei template id, an OSV id.",
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "identity_components": {
+      "description": "Free-form key/value bag a source uses to identify what it found (e.g. package + ecosystem for SCA, file + line + rule for SAST, host + port for DAST). Deliberately not a closed schema per source type in v1 — different scanner classes have genuinely different identity shapes. Fireline core computes a versioned fingerprint from these values; it never treats them as the fingerprint itself.",
+      "type": "object",
+      "minProperties": 1,
+      "additionalProperties": { "type": "string" }
+    },
+    "severity_raw": {
+      "description": "Severity exactly as the source tool reported it, verbatim. Never collapsed into a normalized score here — that erases information a Fireline rule may need.",
+      "type": "string",
+      "minLength": 1
+    },
+    "raw_payload": {
+      "description": "The original tool-output fragment this Observation was built from, preserved so source truth is never lost to normalization.",
+      "type": "object"
+    },
+    "observed_at": {
+      "description": "When the source tool run occurred, distinct from when Fireline core ingested the Observation.",
+      "type": "string",
+      "format": "date-time"
+    }
+  }
+}

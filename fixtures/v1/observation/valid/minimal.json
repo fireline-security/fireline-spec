@@ -1,0 +1,16 @@
+{
+  "schema_version": "v1",
+  "source": {
+    "tool": "semgrep",
+    "rule_id": "go.lang.security.audit.sql-injection"
+  },
+  "identity_components": {
+    "file": "internal/storage/postgres/postgres.go",
+    "rule": "go.lang.security.audit.sql-injection"
+  },
+  "severity_raw": "ERROR",
+  "raw_payload": {
+    "check_id": "go.lang.security.audit.sql-injection",
+    "path": "internal/storage/postgres/postgres.go"
+  }
+}
