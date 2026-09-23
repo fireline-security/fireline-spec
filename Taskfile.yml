@@ -1,0 +1,44 @@
+version: "3"
+
+tasks:
+  build:
+    desc: Build the schema validator
+    cmds:
+      - go build ./...
+
+  validate-schemas:
+    desc: Compile schemas/v1/observation.schema.json as JSON Schema
+    cmds:
+      - go run ./tools/validate
+
+  # validate-fixtures runs the same command as validate-schemas today (the
+  # validator compiles the schema before it can check any fixture) but is
+  # kept as a separate task so CI output distinguishes "the schema is
+  # broken" from "a fixture disagrees with the schema".
+  validate-fixtures:
+    desc: Validate every fixture under fixtures/v1/ against its schema
+    deps: [validate-schemas]
+
+  validate:
+    desc: Validate schemas and fixtures
+    deps: [validate-fixtures]
+
+  lint:
+    desc: Run gofmt, go vet, and golangci-lint
+    cmds:
+      - gofmt -l .
+      - go vet ./...
+      - golangci-lint run
+
+  coverage:
+    desc: Run `go test` over the same validate logic `task validate` runs, with coverage instrumentation, and fail below an 85% minimum
+    cmds:
+      - |
+        set -e
+        go test ./... -coverprofile=coverage.out
+        go tool cover -func=coverage.out
+        pct=$(go tool cover -func=coverage.out | tail -1 | awk '{print $NF}' | tr -d '%')
+        awk -v p="$pct" 'BEGIN {
+          if (p + 0 < 85) { printf "coverage %.1f%% is below the 85%% minimum\n", p; exit 1 }
+          printf "coverage %.1f%% meets the 85%% minimum\n", p
+        }'
